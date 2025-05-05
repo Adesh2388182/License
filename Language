@@ -1,0 +1,69 @@
+Controller
+
+using Sitecore.Globalization;
+using System.Web.Mvc;
+
+namespace ShitlaDairyFarm.Controllers
+{
+    public class LanguageController : Controller
+    {
+        public ActionResult LanguageSwitcher()
+        {
+            var languages = LanguageHelper.GetAvailableLanguages();
+            return View("~/Views/Shitla/Language/Index.cshtml",languages);
+        }
+
+        public ActionResult ChangeLanguage(string lang)
+        {
+            Sitecore.Context.Language = Language.Parse(lang);
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+    }
+}
+
+
+Index(Language)
+
+@model List<Sitecore.Globalization.Language>
+
+
+<!-- Language Switcher -->
+<div class="language-switcher">
+    <div class="dropdown">
+        <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            🌐 Language
+        </a>
+
+        <ul class="dropdown-menu">
+            @foreach (var language in Model)
+            {
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("ChangeLanguage", new { lang = language.Name })">
+                        @language.Name
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+
+Model LanguageHelper.cs
+
+using Sitecore.Data.Managers;
+using Sitecore.Globalization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ShitlaDairyFarm
+{
+    public class LanguageHelper
+    {
+        public static List<Language> GetAvailableLanguages()
+        {
+            return LanguageManager.GetLanguages(Sitecore.Context.Database).ToList();
+        }
+    }
+}
+
